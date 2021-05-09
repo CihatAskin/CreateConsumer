@@ -1,0 +1,19 @@
+[Unit]\n
+Description=##NAME## Start Service\n
+StartLimitIntervalSec=10s\n
+StartLimitBurst=5\n
+\n
+[Service]\n
+WorkingDirectory=/root/Consumer\n
+ExecStart=/usr/bin/dotnet /root/Consumer/Consumer.dll\n
+Restart=always\n
+RestartSec=5s\n
+KillSignal=SIGINT\n
+SyslogIdentifier=##NAME##\n
+User=root\n
+Environment=ASPNETCORE_ENVIRONMENT=Production\n
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false\n
+\n
+[Install]\n
+WantedBy=multi-user.target\n
+
