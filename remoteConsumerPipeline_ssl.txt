@@ -1,0 +1,50 @@
+pkill -f Consumer
+sleep 2
+pkill chrome
+
+COUNT=$(< /home/_XXX_/Desktop/Creator/COUNT)
+cd /home/_XXX_/Desktop/_PROJECT_
+msg=$(git pull origin _BRANCH_)
+if [[ $msg != *"Already up to date"* ]];
+then
+cd /home/_XXX_/Desktop/
+rm -rf consumer*
+rm -rf publish*
+cd /home/_XXX_/Desktop/_PROJECT_/Source/Consumer/
+rm -rf bin/ obj/
+dotnet publish -c Release
+cp -r bin/Release/net5.0/publish/ /home/_XXX_/Desktop/
+cd /home/_XXX_/Desktop
+   for i in $(seq $COUNT)
+   do
+       cp -r  publish/ "consumer_$i"
+   done
+fi
+
+cd /home/_XXX_/Desktop
+pkill chrome
+gnome-terminal -x google-chrome-stable --remote-debugging-port=9222
+
+for i in $(seq $COUNT)
+do
+
+    if [ ! -d "publish/" ]; then
+        cd /home/_XXX_/Desktop/_PROJECT_/Source/Consumer/
+        rm -rf bin/ obj/
+        dotnet publish -c Release
+        cp -r bin/Release/net5.0/publish/ /home/_XXX_/Desktop/
+        cd /home/_XXX_/Desktop
+    fi
+
+
+    FILE="/home/_XXX_/Desktop/consumer_$i"
+    if [ ! -d "$FILE" ]; then
+      cp -r  publish/ "consumer_$i"
+    fi
+
+   cd $FILE
+   chmod +x Consumer.dll
+   sleep 10
+   gnome-terminal -x dotnet Consumer.dll
+   cd /home/_XXX_/Desktop
+done
